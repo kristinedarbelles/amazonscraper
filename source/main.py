@@ -16,14 +16,15 @@ def create_connection(db_file):
     return None
 
 def insert_review(conn, ReviewID,Date,Starrating,Title,Body,Username,UserID,Verified,Helpful,Comments):
-    sql = ''' INSERT INTO ReviewsTracer(ReviewID,Date,Starrating,Title,Body,Username,UserID,Verified,Helpful,Comments)
+    sql = ''' INSERT INTO ReviewsMakey(ReviewID,Date,Starrating,Title,Body,Username,UserID,Verified,Helpful,Comments)
               VALUES(?,?,?,?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, (ReviewID,Date,Starrating,Title,Body,Username,UserID,Verified,Helpful,Comments))
+    conn.commit()
     return cur.lastrowid
 
 # Code below is scraping reviews for Tracer360
-urlstring = 'https://www.amazon.com/Tracer360-Revolutionary-Illuminated-Multicolored-Weatherproof/product-reviews/B00GI98ZFO/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews'
+urlstring = 'https://www.amazon.com/Makey-Invention-Kit-Everyone/product-reviews/B008SFLEPE/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews'
 headers = {'User-agent': 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36'}
 
 req = urllib.request.Request(urlstring, headers=headers)
@@ -140,7 +141,7 @@ while True:
 
         print("---------------------------")
 
-    insert_review(myconnection, output_id,output_datespan,output_starrating,output_title,output_body,output_authorname,
+        insert_review(myconnection, output_id,output_datespan,output_starrating,output_title,output_body,output_authorname,
                   output_authorid,output_avp,output_helpful,output_comment)
 
     # We pause the scraping for one second. Other coders who have scraped Amazon have suggested following this best practice so that Amazon doesn't block your code.
@@ -148,8 +149,9 @@ while True:
 
     # Here I am getting the next page. Once the next page is obtained, it goes back to the top of the loop where it collects all the above information for reviews on that page.
     pagenumber = pagenumber + 1
-    urlstring = 'https://www.amazon.com/Tracer360-Revolutionary-Illuminated-Multicolored-Weatherproof/product-reviews/B00GI98ZFO/ref=cm_cr_arp_d_paging_btm_{}?ie=UTF8&reviewerType=all_reviews&pageNumber={}'.format(pagenumber, pagenumber)
+    urlstring = 'https://www.amazon.com/Makey-Invention-Kit-Everyone/product-reviews/B008SFLEPE/ref=cm_cr_arp_d_paging_btm_{}?ie=UTF8&reviewerType=all_reviews&pageNumber={}'.format(pagenumber, pagenumber)
     req = urllib.request.Request(urlstring, headers=headers)
     page = urllib.request.urlopen(req)
 
+myconnection.close()
 print("Total reviews = {}".format(totalreviews))
